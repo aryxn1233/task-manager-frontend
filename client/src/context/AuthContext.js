@@ -1,4 +1,3 @@
-
 import React, { createContext, useReducer, useEffect } from 'react';
 import api from '../services/api';
 
@@ -30,31 +29,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    try {
-      const { data } = await api.post('/api/auth/login', { email, password }); 
-      localStorage.setItem('token', data.token);
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-      }
-      dispatch({ type: 'LOGIN', payload: { user: data.user || {} } });
-    } catch (err) {
-      console.error("Login failed:", err.response?.data || err.message);
-      throw err; // propagate error so UI can show message
-    }
+    const { data } = await api.post('/api/auth/login', { email, password });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    dispatch({ type: 'LOGIN', payload: { user: data.user } });
   };
 
   const register = async (name, email, password) => {
-    try {
-      const { data } = await api.post('/api/auth/register', { name, email, password }); 
-      localStorage.setItem('token', data.token);
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-      }
-      dispatch({ type: 'LOGIN', payload: { user: data.user || {} } });
-    } catch (err) {
-      console.error("Registration failed:", err.response?.data || err.message);
-      throw err;
-    }
+    const { data } = await api.post('/api/auth/register', { name, email, password });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    dispatch({ type: 'LOGIN', payload: { user: data.user } });
   };
 
   const logout = () => {
