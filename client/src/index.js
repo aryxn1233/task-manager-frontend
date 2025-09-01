@@ -5,14 +5,23 @@ import './styles/global.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// 🔥 Firebase imports
+import { initializeApp } from "firebase/app";
+import { getMessaging, onMessage } from "firebase/messaging";
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// ✅ Your Firebase config (same as in firebaseConfig.js)
+const firebaseConfig = {
+  apiKey: "AIzaSyBVzU1sYj0JWLhxN3ZGCuk0dstRBoLgjgI",
+  authDomain: "task-manager-abc20.firebaseapp.com",
+  projectId: "task-manager-abc20",
+  storageBucket: "task-manager-abc20.firebasestorage.app",
+  messagingSenderId: "779603659104",
+  appId: "1:779603659104:web:ce53dc32aa912654fb3605",
+  measurementId: "G-LZ9FTLEW8E"
+};
+
+// 🔥 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// 🔔 Setup Firebase Cloud Messaging (FCM)
+if ("N
