@@ -1,5 +1,6 @@
 import React, { createContext, useReducer, useEffect } from 'react';
 import api from '../services/api';
+import { requestForToken } from '../firebase'; // <-- import firebase util
 
 const AuthContext = createContext();
 
@@ -28,11 +29,29 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const saveFcmToken = async (jwtToken) => {
+    const fcmToken = await requestForToken();
+    if (fcmToken) {
+      try {
+        await api.post(
+          '/api/auth/save-fcm-token',
+          { token: fcmToken },
+          { headers: { Authorization: `Bearer ${jwtToken}` } }
+        );
+      } catch (err) {
+        console.error("Error saving FCM token:", err);
+      }
+    }
+  };
+
   const login = async (email, password) => {
     const { data } = await api.post('/api/auth/login', { email, password });
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     dispatch({ type: 'LOGIN', payload: { user: data.user } });
+
+    // save FCM token after login
+    await saveFcmToken(data.token);
   };
 
   const register = async (name, email, password) => {
@@ -40,6 +59,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     dispatch({ type: 'LOGIN', payload: { user: data.user } });
+
+    // save FCM token after register
+    await saveFcmToken(data.token);
   };
 
   const logout = () => {
