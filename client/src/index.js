@@ -24,4 +24,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // 🔔 Setup Firebase Cloud Messaging (FCM)
-if ("N
+if ("Notification" in window && navigator.serviceWorker) {
+  const messaging = getMessaging(app);
+
+  // Listen for foreground messages
+  onMessage(messaging, (payload) => {
+    console.log("📩 Message received: ", payload);
+
+    if (Notification.permission === "granted") {
+      new Notification(payload.notification.title, {
+        body: payload.notification.body,
+        icon: "/firebase-logo.png", // optional, put your app logo in /public
+      });
+    }
+  });
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+reportWebVitals();
