@@ -1,3 +1,4 @@
+
 import React, { createContext, useReducer, useEffect } from 'react';
 import api from '../services/api';
 
@@ -22,26 +23,43 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      // You might want to verify the token with the backend here
-      dispatch({ type: 'LOGIN', payload: { user: {} } }); // Simplified
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      dispatch({ type: 'LOGIN', payload: { user: JSON.parse(user) } });
     }
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', data.token);
-    dispatch({ type: 'LOGIN', payload: { user: {} } }); // Simplified
+    try {
+      const { data } = await api.post('/api/auth/login', { email, password }); 
+      localStorage.setItem('token', data.token);
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      dispatch({ type: 'LOGIN', payload: { user: data.user || {} } });
+    } catch (err) {
+      console.error("Login failed:", err.response?.data || err.message);
+      throw err; // propagate error so UI can show message
+    }
   };
 
   const register = async (name, email, password) => {
-    const { data } = await api.post('/auth/register', { name, email, password });
-    localStorage.setItem('token', data.token);
-    dispatch({ type: 'LOGIN', payload: { user: {} } }); // Simplified
+    try {
+      const { data } = await api.post('/api/auth/register', { name, email, password }); 
+      localStorage.setItem('token', data.token);
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      dispatch({ type: 'LOGIN', payload: { user: data.user || {} } });
+    } catch (err) {
+      console.error("Registration failed:", err.response?.data || err.message);
+      throw err;
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     dispatch({ type: 'LOGOUT' });
   };
 
