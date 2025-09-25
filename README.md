@@ -9,8 +9,8 @@ npm install
 
 
 3. (Optional) Set up `.env` with backend API URL:
-REACT_APP_API_URL=https://your-backend-url/api
+REACT_APP_API_URL= your_backend_url(http://localhost:3000 for locale use)
 
 
-4. Run frontend dev server:
+5. Run frontend dev server:
 npm start
